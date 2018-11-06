@@ -36,6 +36,9 @@
 	setTimers();
  }
  
+ /*
+  * Refreshes cards on refresh button click
+  */
  function refreshCards(){
 	moveCounter = 0;
 	timer = 0;
@@ -47,6 +50,9 @@
 	displayCardsOnPage();
  }
  
+  /*
+  * Initializes screen on first page load
+  */
  function initializeScreen(){
 	document.querySelector('span.moves').innerHTML = moveCounter;
 	let refreshElement = document.querySelector('div.restart');
@@ -54,6 +60,9 @@
 	displayCardsOnPage();
  }
  
+  /*
+  * Sets a timer function to run timer on every seconds
+  */
  function setTimers(){
 	second = 0;
 	timerIntervalId = setInterval(function () {
@@ -64,12 +73,17 @@
 
 	ratingIntervalId = setInterval(displayStarRating, 30000);
  }
-
+ /*
+  * Clears all timer methods
+  */
  function clearTimers() {
      clearInterval(timerIntervalId);
      clearInterval(ratingIntervalId);
  }
  
+  /*
+  * Evaluates star rating calculation mechanism
+  */
  function displayStarRating() {
      if (starRating >= 0) {
          starRating -= 0.5;
@@ -89,6 +103,9 @@
      }
  }
  
+  /*
+  * Formats time to display on screen properly
+  */
  function getTimeFormatted() {
     var hours   = Math.floor(timer / 3600);
     var minutes = Math.floor((timer - (hours * 3600)) / 60);
@@ -100,7 +117,10 @@
     return hours + ':' + minutes + ':' + seconds;
 }
 
-// Shuffle function from http://stackoverflow.com/a/2450976
+ /*
+  * Shuffles cards on game initialization
+  * function from http://stackoverflow.com/a/2450976
+  */
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
 
@@ -164,14 +184,25 @@ function cardClicked(event)
 	}
 }
 
+  /*
+  * Toggles cards open and show classes on cards click
+  */
 function toggleCardOpened(card){
 	card.classList.toggle("open");
 	card.classList.toggle("show");
 }
+
+ 
+  /*
+  * Toggles cards match class on two cards match
+  */
 function toggleCardMatch(card){
 	card.classList.toggle("match");
 }
-
+ 
+  /*
+  * Returns a boolean value if game is completed or not
+  */
 function gameCompleted(){
 	let completedCount = document.querySelectorAll('li.match').length;
 	return completedCount == cards.length * 2;
