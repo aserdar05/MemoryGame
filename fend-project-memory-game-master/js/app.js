@@ -159,14 +159,15 @@ function cardClicked(event)
 			moveCounter++;
 		}
 		else if(selectedCard.querySelector('i').classList[1] == cardWaiting.querySelector('i').classList[1]){
-			if(!selectedCard.classList.contains('open'))
+			if(!selectedCard.classList.contains('open')){
+				toggleCardMatch(selectedCard);
+				toggleCardMatch(cardWaiting);
+				cardWaiting = null;
+				if(gameCompleted()){
+					let timeFormatted = getTimeFormatted();
+					openModal('You Won!', `Congratulations you completed the game with ${moveCounter} moves, ${starRating} star rating and on ${timeFormatted}. Do you want to play again?`);
+				}
 				moveCounter++;
-			toggleCardMatch(selectedCard);
-			toggleCardMatch(cardWaiting);
-			cardWaiting = null;
-			if(gameCompleted()){
-				let timeFormatted = getTimeFormatted();
-				openModal('You Won!', `Congratulations you completed the game with ${moveCounter} moves, ${starRating} star rating and on ${timeFormatted}. Do you want to play again?`);
 			}
 		}
 		else{
