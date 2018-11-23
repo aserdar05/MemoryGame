@@ -45,6 +45,7 @@
 	starRating = 5;
 	displayStarRating();
 	clearTimers();
+	cardWaiting = null;
 	document.querySelector('span.moves').innerHTML = moveCounter;
 	document.querySelector('ul.deck').remove();
 	displayCardsOnPage();
@@ -54,6 +55,8 @@
   * Initializes screen on first page load
   */
  function initializeScreen(){
+	document.querySelector('#materialModalButtonOK').addEventListener('click', confirmReplay);
+	document.querySelector('#materialModalButtonCANCEL').addEventListener('click', rejectReplay);
 	document.querySelector('span.moves').innerHTML = moveCounter;
 	let refreshElement = document.querySelector('div.restart');
 	refreshElement.addEventListener('click', refreshCards);
@@ -65,7 +68,7 @@
   */
  function setTimers(){
 	second = 0;
-	timerIntervalId = setInterval(function () {
+	timerIntervalId = setInterval(() => {
 		timer++;
 		let timeFormatted = getTimeFormatted();
 		document.querySelector('span.timer').innerHTML = `Timer: ${timeFormatted}`;	
@@ -87,7 +90,7 @@
  function displayStarRating() {
      if (starRating >= 0) {
          starRating -= 0.5;
-         var starElements = document.querySelectorAll('ul.stars li');
+         let starElements = document.querySelectorAll('ul.stars li');
          for (let index = 0; index < 5; index++) {
              let iStarElement = starElements[index].querySelector('i');
              if (starRating - index <= 0) {
@@ -107,9 +110,9 @@
   * Formats time to display on screen properly
   */
  function getTimeFormatted() {
-    var hours   = Math.floor(timer / 3600);
-    var minutes = Math.floor((timer - (hours * 3600)) / 60);
-    var seconds = timer - (hours * 3600) - (minutes * 60);
+    let hours   = Math.floor(timer / 3600);
+    let minutes = Math.floor((timer - (hours * 3600)) / 60);
+    let seconds = timer - (hours * 3600) - (minutes * 60);
 
     if (hours   < 10) {hours   = "0"+hours;}
     if (minutes < 10) {minutes = "0"+minutes;}
@@ -122,7 +125,7 @@
   * function from http://stackoverflow.com/a/2450976
   */
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
     while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
@@ -149,39 +152,63 @@ function shuffle(array) {
 function cardClicked(event)
 {
 	if(!lockUIEvents){
-		var selectedCard = event.target;
+		let selectedCard = event.target;
 		if(cardWaiting == null){
 			toggleCardOpened(selectedCard);
 			cardWaiting = selectedCard;
+			moveCounter++;
 		}
 		else if(selectedCard.querySelector('i').classList[1] == cardWaiting.querySelector('i').classList[1]){
+			if(!selectedCard.classList.contains('open'))
+				moveCounter++;
 			toggleCardMatch(selectedCard);
 			toggleCardMatch(cardWaiting);
 			cardWaiting = null;
 			if(gameCompleted()){
 				let timeFormatted = getTimeFormatted();
-				var response = confirm(`Congratulations you completed the game with ${moveCounter} moves, ${starRating} star rating and on ${timeFormatted}. Do you want to play again?`);
-				if (response == true) {
-				    refreshCards();
-				}
-				else {
-				    clearTimers();
-				}
+				openModal('You Won!', `Congratulations you completed the game with ${moveCounter} moves, ${starRating} star rating and on ${timeFormatted}. Do you want to play again?`);
 			}
 		}
 		else{
 			toggleCardOpened(selectedCard);
 			lockUIEvents = true;
-			setTimeout(function hideCards(){
+			setTimeout(() => {
 				toggleCardOpened(selectedCard);
 				toggleCardOpened(cardWaiting);
 				cardWaiting = null;
 				lockUIEvents = false;
 			}, 1000);
+			moveCounter++;
 		}
-		moveCounter++;
 		document.querySelector('span.moves').innerHTML = moveCounter;
 	}
+}
+
+//Opens a new confirm modal dialog
+function openModal(title, text){
+	document.getElementById('materialModalTitle').innerHTML = title;
+	document.getElementById('materialModalText').innerHTML = text;
+	document.getElementById('materialModalButtonCANCEL').style.display = 'none';
+	document.getElementById('materialModal').className = 'show';
+	document.getElementById('materialModalButtonCANCEL').style.display = 'block';
+}
+
+//Closes modal dialog
+function closeModal(){
+	document.getElementById('materialModal').className = 'hide';
+}
+
+//Accepts confirm modal dialog question
+function confirmReplay()
+{
+	refreshCards();
+	closeModal();
+}
+
+//Reject confirm modal dialog question
+function rejectReplay(){
+	clearTimers();
+	closeModal();
 }
 
   /*
